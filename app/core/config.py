@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int
     database_url: str
     cors_allowed_origins: list[str] = ["*"]
+    rate_limit_per_minute: int = 60
 
 
 settings = Settings()

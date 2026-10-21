@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.auth.services import WrongCredentialsException, authenticate_and_create_token
 from app.core.db import DBSession
+from app.core.rate_limiter import limiter
 
 from .schema import TokenOut
 
@@ -19,7 +20,9 @@ router = APIRouter(
     response_model=TokenOut,
     status_code=status.HTTP_200_OK,
 )
+@limiter.limit("5/minute")
 async def login(
+    request: Request,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: DBSession,
 ):
